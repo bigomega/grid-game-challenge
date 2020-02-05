@@ -1,28 +1,12 @@
 import { Index , CellTypes, ReturnPath } from '../util'
+import Cell from './Cell'
 
-class Cell {
-  index: Index
-  type: CellTypes
-  total_distance: number
-  adjacent_cells: { neighbour: Cell, neighbour_distance: number }[]
-  previous: Cell | null
-
-  constructor(index: [number, number], type: CellTypes, total_distance = Infinity) {
-    this.index = index
-    this.type = type
-    this.total_distance = total_distance
-    this.adjacent_cells = []
-    this.previous = null // for tracing the final path
-    return this
-  }
-}
-
-class Game {
+class Grid {
   size: Index
   mapgen: CellTypes[][]
-  portalOuts: Cell[]
-  flat_grid: Cell[]
-  grid: Cell[][]
+  wormholeOuts: Cell[]
+  flat_data: Cell[]
+  data: Cell[][]
   end_cell: Cell | null
   head_cell: Cell
 
@@ -30,15 +14,15 @@ class Game {
   constructor (mapgen:CellTypes[][], size: Index) {
     this.size = size
     this.mapgen = mapgen
-    this.portalOuts = []
-    this.flat_grid = [] // .flat() is still experimental
+    this.wormholeOuts = []
+    this.flat_data = [] // .flat() is still experimental
     this.head_cell = new Cell([0, 0], CellTypes.Start)
-    this.grid = mapgen.map((row, x) => {
+    this.data = mapgen.map((row, x) => {
       return row.map((type, y) => {
         const cell = new Cell([x, y], type, Infinity)
-        this.flat_grid.push(cell)
+        this.flat_data.push(cell)
         if(type === CellTypes.OutWormhole)
-          this.portalOuts.push(cell)
+          this.wormholeOuts.push(cell)
         if (type === CellTypes.Start)
           this.head_cell = cell
         return cell
@@ -50,9 +34,9 @@ class Game {
   }
 
   connectCells (index: Index) {
-    const cell = this.grid[index[0]][index[1]]
+    const cell = this.data[index[0]][index[1]]
     if (cell.type === CellTypes.InWormhole) {
-      this.portalOuts.map(neighbour => {
+      this.wormholeOuts.map(neighbour => {
         const neighbour_distance = this.getDistance(cell.type, CellTypes.OutWormhole)
         if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
           cell.adjacent_cells.push({ neighbour, neighbour_distance })
@@ -69,7 +53,7 @@ class Game {
         return 1
       if (x >= this.size[0] || y >= this.size[1])
         return 1
-      const neighbour = this.grid[x][y]
+      const neighbour = this.data[x][y]
       if (!(neighbour instanceof Cell))
         // ^ WEIRD, execution shouldn't get here
         return 1
@@ -117,7 +101,7 @@ class Game {
   }
 
   findPath (): { distance: number, path: ReturnPath } {
-    let cell_queue = this.flat_grid.slice()
+    let cell_queue = this.flat_data.slice()
 
     while (cell_queue.length) {
       // go to the closest cell in queue
@@ -164,4 +148,4 @@ class Game {
   }
 }
 
-export default Game
+export default Grid

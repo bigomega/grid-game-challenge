@@ -1,4 +1,4 @@
-import Game from './Game';
+import Grid from './Grid';
 
 enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
 const cell_type_map:any = {
@@ -17,8 +17,8 @@ test('works for a sample map', () => {
 -SBGBO
 -BEB--
 I-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	let game = new Game(mapgen, [4,6])
-	let solution = game.findPath()
+	let grid = new Grid(mapgen, [4,6])
+	let solution = grid.findPath()
 	expect(solution.distance).toBe(12);
 });
 
@@ -28,8 +28,8 @@ test('uses portal', () => {
 -SGGEO
 -GGG--
 I-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	let game = new Game(mapgen, [4,6])
-	let solution = game.findPath()
+	let grid = new Grid(mapgen, [4,6])
+	let solution = grid.findPath()
 	expect(solution.distance).toBe(6);
 });
 
@@ -39,8 +39,8 @@ test('prefers gravel when necessary', () => {
 --GGEG
 -GBG--
 O-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	let game = new Game(mapgen, [4,6])
-	let solution = game.findPath()
+	let grid = new Grid(mapgen, [4,6])
+	let solution = grid.findPath()
 	expect(solution.distance).toBe(12);
 });
 
@@ -51,19 +51,19 @@ test('finds no solution case', () => {
 -SBGBO
 -BEB--
 I-B---`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	let game = new Game(mapgen, [4,6])
-	let solution = game.findPath()
+	let grid = new Grid(mapgen, [4,6])
+	let solution = grid.findPath()
 	expect(solution.distance).toBe(-1);
 });
 
 test('doesn\'t break without start or end', () => {
 	let mapgen = '--BE-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	let game = new Game(mapgen, [1,5])
-	let solution = game.findPath()
+	let grid = new Grid(mapgen, [1,5])
+	let solution = grid.findPath()
 	expect(solution.distance).toBe(-1);
 
 	mapgen = '--SB-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
-	game = new Game(mapgen, [1,5])
-	solution = game.findPath()
+	grid = new Grid(mapgen, [1,5])
+	solution = grid.findPath()
 	expect(solution.distance).toBe(-1);
 });

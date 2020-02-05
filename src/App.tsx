@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import update from 'react-addons-update'
 import CellControl from './CellControl'
-import Game from './models/Game'
+import Grid from './models/Grid'
 import { CellTypes, ReturnPath, IAppState, CELL_TYPES } from './util'
 import './App.css'
 
@@ -48,8 +48,8 @@ class App extends Component<{}, IAppState> {
   }
 
   solve() {
-    let game = new Game(this.state.grid, [this.state.size_x, this.state.size_y])
-    let solution = game.findPath()
+    let grid = new Grid(this.state.grid, [this.state.size_x, this.state.size_y])
+    let solution = grid.findPath()
     let path:ReturnPath = solution.path
     this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
     // console.log(solution.distance)

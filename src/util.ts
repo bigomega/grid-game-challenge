@@ -31,7 +31,7 @@ export const CELL_TYPES = [
   { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: 'End Point' },
   { class: 'boulder', type: CellTypes.Boulder, img:'/icons/boulder-3.png', text: 'Boulder' },
   { class: 'gravel', type: CellTypes.Gravel, img:'/icons/gravel-2.svg', text: 'Gravel' },
-  { class: 'inWormhole', type: CellTypes.InWormhole, img:'/icons/portal-in.svg', text: 'Wormhole Entry' },
-  { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.svg', text: 'Wormhole Exit' },
+  { class: 'inWormhole', type: CellTypes.InWormhole, img:'/icons/portal-in.png', text: 'Wormhole Entry' },
+  { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.png', text: 'Wormhole Exit' },
   { class: 'clear', type: CellTypes.Clear, img:'/icons/shovel-2.svg', text: 'Clear Point' },
 ]
