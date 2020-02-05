@@ -116,6 +116,12 @@ body {
 .row:not(:first-child) .cell {
   border-top: none;
 }
+.cell.path {
+  background: green;
+}
+.cell.path:hover {
+  background: #47ad1f;
+}
 
 .cell img {
   max-width: 80%;

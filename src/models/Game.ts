@@ -1,8 +1,8 @@
 "use strict"
 
 type Index = [number, number]
-type ReturnPath = { index: Index, distance: number, cell: CellTypes }[]
 enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
+type ReturnPath = { index: Index, distance: number, cell: CellTypes }[]
 
 class Cell {
   index: Index

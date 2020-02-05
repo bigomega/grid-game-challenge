@@ -1,7 +1,7 @@
 import Game from './Game';
 
 enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
-const cell_type_map:object = {
+const cell_type_map:any = {
 	'-': CellTypes.Clear,
 	B: CellTypes.Boulder,
 	G: CellTypes.Gravel,

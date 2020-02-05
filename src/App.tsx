@@ -4,19 +4,22 @@ import CellControl from './CellControl'
 import Game from './models/Game'
 import './App.css'
 
+type Index = [number, number]
 enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
+type ReturnPath = { index: Index, distance: number, cell: CellTypes }[]
 
 interface IAppState {
   size_x: number,
   size_y: number,
   selected: CellTypes,
-  // boulder_cells: [number, number][],
-  // gravel_cells: [number, number][],
-  // in_wormhole_cells: [number, number][],
-  // out_wormhole_cells: [number, number][],
-  start?: [number, number],
-  end?: [number, number],
+  // boulder_cells: Index[],
+  // gravel_cells: Index[],
+  // in_wormhole_cells: Index[],
+  // out_wormhole_cells: Index[],
   grid: CellTypes[][],
+  solution: string[],
+  start?: Index,
+  end?: Index,
 }
 
 class App extends Component<{}, IAppState> {
@@ -26,6 +29,7 @@ class App extends Component<{}, IAppState> {
     size_y: 10,
     selected: CellTypes.Start,
     grid: this.generateGrid(5, 10),
+    solution: [],
   }
 
   constructor(props: object) {
@@ -60,13 +64,16 @@ class App extends Component<{}, IAppState> {
   }
 
   solve() {
-    //
-    // let game = new Game(this.state.grid, [this.state.size_x, this.state.size_y])
+    let game = new Game(this.state.grid, [this.state.size_x, this.state.size_y])
+    let solution = game.findPath()
+    let path:ReturnPath = solution.path
+    this.setState({ solution: path.map(o => o.index.join()) })
+    console.log(solution.distance)
   }
 
   render() {
-    console.log(this.state.start)
-    console.log(this.state.grid)
+    console.log(this.state.start, this.state.end)
+    console.log(this.state.solution)
     const cell_types = [
       { class: 'start', type: CellTypes.Start, img: '/icons/start.svg', text: 'Start Point' },
       { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: 'End Point' },
@@ -98,7 +105,10 @@ class App extends Component<{}, IAppState> {
               <div className="row" data-x={x} key={x}>
               {
                 row.map((cell: CellTypes, y:number) =>
-                  <div className="cell" data-x={x} data-y={y} key={y} onClick={e => this.setCell(x, y, cell)}>
+                  <div
+                    className={'cell' + (this.state.solution.includes([x, y].join())?' path': '')}
+                    data-x={x} data-y={y} key={y} onClick={e => this.setCell(x, y, cell)}
+                  >
                     { cell !== CellTypes.Clear && <img src={process.env.PUBLIC_URL + cell_images[cell]} alt={CellTypes[cell]} />}
                   </div>
                 )
@@ -109,7 +119,7 @@ class App extends Component<{}, IAppState> {
           </div>
         </div>
         <div className="resetContainer">
-          <div className="solve btn" onClick={this.solve}>Solve</div>
+          <div className="solve btn" onClick={this.solve.bind(this)}>Solve</div>
           <div className="reset btn">Resize / Reset</div>
         </div>
       </div>
