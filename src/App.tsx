@@ -19,6 +19,39 @@ class App extends Component<{}, IAppState> {
   private size_x_ref = React.createRef<HTMLInputElement>()
   private size_y_ref = React.createRef<HTMLInputElement>()
 
+
+  keyBinding(event: any){
+    switch (event.keyCode) {
+      case 83: // [S]
+        this.setState({ selected: CellTypes.Start })
+        break
+      case 69: // [E]
+        this.setState({ selected: CellTypes.End })
+        break
+      case 66: // [B]
+        this.setState({ selected: CellTypes.Boulder })
+        break
+      case 71: // [G]
+        this.setState({ selected: CellTypes.Gravel })
+        break
+      case 73: // [I]
+        this.setState({ selected: CellTypes.InWormhole })
+        break
+      case 79: // [O]
+        this.setState({ selected: CellTypes.OutWormhole })
+        break
+      case 67: // [C]
+        this.setState({ selected: CellTypes.Clear })
+        break
+    }
+  }
+  componentDidMount(){
+    document.addEventListener('keydown', this.keyBinding.bind(this), false)
+  }
+  componentWillUnmount(){
+    document.removeEventListener('keydown', this.keyBinding.bind(this), false)
+  }
+
   generateGrid(x: number = this.state.size_x, y: number = this.state.size_y) {
     return [...Array(x).keys()].map(x =>
       [...Array(y).keys()].map(y => CellTypes.Clear)

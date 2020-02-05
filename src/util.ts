@@ -27,11 +27,11 @@ export interface ICellControlProps {
 }
 
 export const CELL_TYPES = [
-  { class: 'start', type: CellTypes.Start, img: '/icons/start.svg', text: 'Start Point' },
-  { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: 'End Point' },
-  { class: 'boulder', type: CellTypes.Boulder, img:'/icons/boulder-3.png', text: 'Boulder' },
-  { class: 'gravel', type: CellTypes.Gravel, img:'/icons/gravel-2.svg', text: 'Gravel' },
-  { class: 'inWormhole', type: CellTypes.InWormhole, img:'/icons/portal-in.png', text: 'Wormhole Entry' },
-  { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.png', text: 'Wormhole Exit' },
-  { class: 'clear', type: CellTypes.Clear, img:'/icons/shovel-2.svg', text: 'Clear Point' },
+  { class: 'start', type: CellTypes.Start, img: '/icons/start.svg', text: '(S)tart Point' },
+  { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: '(E)nd Point' },
+  { class: 'boulder', type: CellTypes.Boulder, img:'/icons/boulder-3.png', text: '(B)oulder' },
+  { class: 'gravel', type: CellTypes.Gravel, img:'/icons/gravel-2.svg', text: '(G)ravel' },
+  { class: 'inWormhole', type: CellTypes.InWormhole, img:'/icons/portal-in.png', text: 'Wormhole (I)n' },
+  { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.png', text: 'Wormhole (O)ut' },
+  { class: 'clear', type: CellTypes.Clear, img:'/icons/shovel-2.svg', text: '(C)lear Point' },
 ]
