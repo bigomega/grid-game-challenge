@@ -27,11 +27,13 @@ class App extends Component<{}, IAppState> {
 
   setCell(x:number, y:number, cell:CellTypes) {
     const grid_updates: any = { [x]: { [y]: { $set: this.state.selected } } }
-    // need work - start/stop points
+    // refactor
     if (this.state.selected === CellTypes.Start) {
       this.setState({ start: [x, y] })
       if(this.state.start && cell !== CellTypes.Start) {
-        grid_updates[this.state.start[0]] = { [this.state.start[1]]: { $set: CellTypes.Clear } }
+        const s_x = this.state.start[0]
+        const s_y = this.state.start[1]
+        grid_updates[s_x] = Object.assign(grid_updates[s_x] || {}, { [s_y]: { $set: CellTypes.Clear } })
       }
     } else if (cell === CellTypes.Start) {
       this.setState({ start: undefined })
@@ -39,7 +41,9 @@ class App extends Component<{}, IAppState> {
     if (this.state.selected === CellTypes.End) {
       this.setState({ end: [x, y] })
       if (this.state.end && cell !== CellTypes.End) {
-        grid_updates[this.state.end[0]] = { [this.state.end[1]]: { $set: CellTypes.Clear } }
+        const e_x = this.state.end[0]
+        const e_y = this.state.end[1]
+        grid_updates[e_x] = Object.assign(grid_updates[e_x] || {}, { [e_y]: { $set: CellTypes.Clear } })
       }
     } else if (cell === CellTypes.End) {
       this.setState({ end: undefined })

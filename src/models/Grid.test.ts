@@ -57,12 +57,12 @@ I-B---`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
 });
 
 test('doesn\'t break without start or end', () => {
-	let mapgen = '--BE-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	let mapgen = '---E-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
 	let grid = new Grid(mapgen, [1,5])
 	let solution = grid.findPath()
 	expect(solution.distance).toBe(-1);
 
-	mapgen = '--SB-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	mapgen = '--S--'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
 	grid = new Grid(mapgen, [1,5])
 	solution = grid.findPath()
 	expect(solution.distance).toBe(-1);
