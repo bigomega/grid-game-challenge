@@ -1,14 +1,5 @@
 import React, { Component } from 'react';
-enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
-
-interface ICellControlProps {
-  class: string,
-  type: CellTypes,
-  img: string,
-  text: string,
-  isActive: boolean,
-  onClick: Function,
-}
+import { ICellControlProps } from './util'
 
 class CellControl extends Component<ICellControlProps> {
   render() {

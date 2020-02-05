@@ -1,8 +1,4 @@
-"use strict"
-
-type Index = [number, number]
-enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
-type ReturnPath = { index: Index, distance: number, cell: CellTypes }[]
+import { Index , CellTypes, ReturnPath } from '../util'
 
 class Cell {
   index: Index
@@ -53,8 +49,7 @@ class Game {
     return this
   }
 
-  setAdjacentCells (index: Index) {
-    const neighbours = []
+  connectCells (index: Index) {
     const cell = this.grid[index[0]][index[1]]
     if (cell.type === CellTypes.InWormhole) {
       this.portalOuts.map(neighbour => {
@@ -62,6 +57,7 @@ class Game {
         if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
           cell.adjacent_cells.push({ neighbour, neighbour_distance })
         }
+        return 1
       })
     }
 
@@ -70,19 +66,20 @@ class Game {
       let nextIndex = [index[0] + dir[0], index[1] + dir[1]]
       let x = nextIndex[0], y = nextIndex[1]
       if (x < 0 || y < 0)
-        return
+        return 1
       if (x >= this.size[0] || y >= this.size[1])
-        return
+        return 1
       const neighbour = this.grid[x][y]
       if (!(neighbour instanceof Cell))
         // ^ WEIRD, execution shouldn't get here
-        return
-      if (neighbour.type == CellTypes.Boulder) // boulders are disconnected
-        return
+        return 1
+      if (neighbour.type === CellTypes.Boulder) // boulders are disconnected
+        return 1
       const neighbour_distance = this.getDistance(cell.type, neighbour.type)
       if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
         cell.adjacent_cells.push({ neighbour, neighbour_distance })
       }
+      return 1
     })
   }
 
@@ -129,7 +126,7 @@ class Game {
       )
       cell_queue.splice(cell_queue.indexOf(closest_cell), 1)
 
-      this.setAdjacentCells(closest_cell.index)
+      this.connectCells(closest_cell.index)
 
       closest_cell.adjacent_cells.map(({ neighbour, neighbour_distance }) => {
         if (cell_queue.includes(neighbour)) {
@@ -142,13 +139,12 @@ class Game {
               this.end_cell = neighbour
           }
         }
+        return 1
       })
     }
 
     if (this.end_cell) {
       // console.log('shortest path:')
-      // const tt = (cell, fn) => (fn(cell), cell.previous && tt(cell.previous, fn))
-      // tt(this.end_cell, cell => console.log(cell.type, cell.index, cell.total_distance))
       const path = (function traverseBack(cell): ReturnPath {
         const current_cell = [{ index: cell.index, distance: cell.total_distance, cell: cell.type }]
         if (!cell.previous) {

@@ -2,26 +2,8 @@ import React, { Component } from 'react'
 import update from 'react-addons-update'
 import CellControl from './CellControl'
 import Game from './models/Game'
+import { CellTypes, ReturnPath, IAppState, CELL_TYPES } from './util'
 import './App.css'
-
-type Index = [number, number]
-enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
-type ReturnPath = { index: Index, distance: number, cell: CellTypes }[]
-
-interface IAppState {
-  size_x: number,
-  size_y: number,
-  selected: CellTypes,
-  // boulder_cells: Index[],
-  // gravel_cells: Index[],
-  // in_wormhole_cells: Index[],
-  // out_wormhole_cells: Index[],
-  grid: CellTypes[][],
-  solution: string[],
-  alertNoSolution: boolean,
-  start?: Index,
-  end?: Index,
-}
 
 class App extends Component<{}, IAppState> {
 
@@ -37,10 +19,6 @@ class App extends Component<{}, IAppState> {
   private size_x_ref = React.createRef<HTMLInputElement>()
   private size_y_ref = React.createRef<HTMLInputElement>()
 
-  constructor(props: object) {
-    super(props)
-  }
-
   generateGrid(x: number = this.state.size_x, y: number = this.state.size_y) {
     return [...Array(x).keys()].map(x =>
       [...Array(y).keys()].map(y => CellTypes.Clear)
@@ -49,6 +27,7 @@ class App extends Component<{}, IAppState> {
 
   setCell(x:number, y:number, cell:CellTypes) {
     const grid_updates: any = { [x]: { [y]: { $set: this.state.selected } } }
+    // need work - start/stop points
     if (this.state.selected === CellTypes.Start) {
       this.setState({ start: [x, y] })
       if(this.state.start && cell !== CellTypes.Start) {
@@ -77,30 +56,21 @@ class App extends Component<{}, IAppState> {
   }
 
   reset() {
-    let size_x:number = +(this.size_x_ref.current && this.size_x_ref.current.value || 5)
-    let size_y:number = +(this.size_y_ref.current && this.size_y_ref.current.value || 10)
+    let size_x:number = +((this.size_x_ref.current && this.size_x_ref.current.value) || 5)
+    let size_y:number = +((this.size_y_ref.current && this.size_y_ref.current.value) || 10)
     this.setState({ size_x, size_y, grid: this.generateGrid(size_x, size_y) })
   }
 
   render() {
     // console.log(this.state.start, this.state.end)
     // console.log(this.state.solution)
-    const cell_types = [
-      { class: 'start', type: CellTypes.Start, img: '/icons/start.svg', text: 'Start Point' },
-      { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: 'End Point' },
-      { class: 'boulder', type: CellTypes.Boulder, img:'/icons/boulder-3.png', text: 'Boulder' },
-      { class: 'gravel', type: CellTypes.Gravel, img:'/icons/gravel-2.svg', text: 'Gravel' },
-      { class: 'inWormhole', type: CellTypes.InWormhole, img:'/icons/portal-in.svg', text: 'Wormhole Entry' },
-      { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.svg', text: 'Wormhole Exit' },
-      { class: 'clear', type: CellTypes.Clear, img:'/icons/shovel-2.svg', text: 'Clear Point' },
-    ]
-    const cell_images = cell_types.reduce((mem: any, obj) => (mem[obj.type] = obj.img, mem), {})
+    const cell_images = CELL_TYPES.reduce((mem: any, obj) => (mem[obj.type] = obj.img, mem), {})
     return (
       <div className={'App' + (this.state.alertNoSolution?' noPath':'')}>
         <div className="alert">No path could be found.</div>
         <div className="controllerContainer">
           {
-            cell_types.map(obj =>
+            CELL_TYPES.map(obj =>
               <CellControl
                 {...obj}
                 onClick={(type:CellTypes) => this.setState({ selected: type })}
