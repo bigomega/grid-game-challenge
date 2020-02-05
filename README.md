@@ -34,7 +34,7 @@ npm test
 ```
 
 #### Screenshot
-![screenshot](/public/screenshot.png)
+![screenshot](/public/bigomega-grid.gif)
 
 ***
 
