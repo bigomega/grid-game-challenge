@@ -34,6 +34,9 @@ class App extends Component<{}, IAppState> {
     alertNoSolution: false,
   }
 
+  private size_x_ref = React.createRef<HTMLInputElement>()
+  private size_y_ref = React.createRef<HTMLInputElement>()
+
   constructor(props: object) {
     super(props)
   }
@@ -70,12 +73,18 @@ class App extends Component<{}, IAppState> {
     let solution = game.findPath()
     let path:ReturnPath = solution.path
     this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
-    console.log(solution.distance)
+    // console.log(solution.distance)
+  }
+
+  reset() {
+    let size_x:number = +(this.size_x_ref.current && this.size_x_ref.current.value || 5)
+    let size_y:number = +(this.size_y_ref.current && this.size_y_ref.current.value || 10)
+    this.setState({ size_x, size_y, grid: this.generateGrid(size_x, size_y) })
   }
 
   render() {
-    console.log(this.state.start, this.state.end)
-    console.log(this.state.solution)
+    // console.log(this.state.start, this.state.end)
+    // console.log(this.state.solution)
     const cell_types = [
       { class: 'start', type: CellTypes.Start, img: '/icons/start.svg', text: 'Start Point' },
       { class: 'end', type: CellTypes.End, img:'/icons/end.svg', text: 'End Point' },
@@ -123,7 +132,10 @@ class App extends Component<{}, IAppState> {
         </div>
         <div className="resetContainer">
           <div className="solve btn" onClick={this.solve.bind(this)}>SOLVE</div>
-          <div className="reset btn">Resize / Reset</div>
+          <input type="number" ref={this.size_x_ref} defaultValue="5"/>
+          x
+          <input type="number" ref={this.size_y_ref} defaultValue="10"/>
+          <div className="reset btn" onClick={this.reset.bind(this)}>Resize / Reset</div>
         </div>
       </div>
     )

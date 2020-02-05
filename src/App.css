@@ -20,7 +20,7 @@ body {
   background: var(--blue-dark);
   color: var(--blue-light);
   text-align: center;
-  animation: changeColor 30s infinite linear;
+  animation: changeColor 60s infinite linear 60s;
 }
 @keyframes changeColor {
   20% {background: #482d11;}
@@ -47,7 +47,7 @@ body {
 }
 
 .controllerContainer {
-  margin: 20px 0;
+  margin: 30px 0 60px;
   display: flex;
   justify-content: center;
 }
@@ -81,8 +81,15 @@ body {
 }
 
 .resetContainer {
-  margin-top: 30px;
-  margin-bottom: 50px;
+  margin: 50px 0;
+}
+
+.resetContainer input {
+  width: 32px;
+  height: 25px;
+  font-size: 1em;
+  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .reset {
@@ -105,7 +112,7 @@ body {
   color: #333;
   cursor: pointer;
   background: #7304b8;
-  margin-right: 30px;
+  margin-right: 50px;
   border: 1px solid #380d68;
   color: white;
 }

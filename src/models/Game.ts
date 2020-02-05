@@ -146,7 +146,7 @@ class Game {
     }
 
     if (this.end_cell) {
-      console.log('shortest path:')
+      // console.log('shortest path:')
       // const tt = (node, fn) => (fn(node), node.previous && tt(node.previous, fn))
       // tt(this.end_cell, node => console.log(node.type, node.index, node.total_distance))
       const path = (function traverseBack(node): ReturnPath {
@@ -162,7 +162,7 @@ class Game {
         path,
       }
     } else {
-      console.log('No path')
+      // console.log('No path')
       return { distance: -1 , path: [] }
     }
   }
