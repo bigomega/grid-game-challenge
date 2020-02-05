@@ -146,6 +146,7 @@ body {
   border-top: none;
 }
 .cell.path {
+  transition: background .25s linear;
   background: green;
 }
 .cell.path:hover {

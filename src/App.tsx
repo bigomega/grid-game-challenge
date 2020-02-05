@@ -55,14 +55,25 @@ class App extends Component<{}, IAppState> {
     let grid = new Grid(this.state.grid, [this.state.size_x, this.state.size_y])
     let solution = grid.findPath()
     let path:ReturnPath = solution.path
-    this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
+    this.setState({ alertNoSolution: !path.length })
+    let len = path.length
+    if (len) {
+      let t = window.setInterval((x:any) => {
+        this.setState({ solution: path.slice(len - 1).map(o => o.index.join()) })
+        len--
+        if(!len) window.clearInterval(t)
+      }, 70)
+    } else {
+      this.setState({ solution: [] })
+    }
+    // this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
     // console.log(solution.distance)
   }
 
   reset() {
     let size_x:number = +((this.size_x_ref.current && this.size_x_ref.current.value) || 5)
     let size_y:number = +((this.size_y_ref.current && this.size_y_ref.current.value) || 10)
-    this.setState({ size_x, size_y, grid: this.generateGrid(size_x, size_y) })
+    this.setState({ size_x, size_y, grid: this.generateGrid(size_x, size_y), solution: [], alertNoSolution: false })
   }
 
   render() {
