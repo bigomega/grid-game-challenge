@@ -53,14 +53,14 @@ class Game {
     return this
   }
 
-  setAdjacentNodes (index: Index) {
+  setAdjacentCells (index: Index) {
     const neighbours = []
-    const node = this.grid[index[0]][index[1]]
-    if (node.type === CellTypes.InWormhole) {
+    const cell = this.grid[index[0]][index[1]]
+    if (cell.type === CellTypes.InWormhole) {
       this.portalOuts.map(neighbour => {
-        const neighbour_distance = this.getDistance(node.type, CellTypes.OutWormhole)
-        if (!node.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
-          node.adjacent_cells.push({ neighbour, neighbour_distance })
+        const neighbour_distance = this.getDistance(cell.type, CellTypes.OutWormhole)
+        if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
+          cell.adjacent_cells.push({ neighbour, neighbour_distance })
         }
       })
     }
@@ -79,9 +79,9 @@ class Game {
         return
       if (neighbour.type == CellTypes.Boulder) // boulders are disconnected
         return
-      const neighbour_distance = this.getDistance(node.type, neighbour.type)
-      if (!node.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
-        node.adjacent_cells.push({ neighbour, neighbour_distance })
+      const neighbour_distance = this.getDistance(cell.type, neighbour.type)
+      if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
+        cell.adjacent_cells.push({ neighbour, neighbour_distance })
       }
     })
   }
@@ -120,24 +120,24 @@ class Game {
   }
 
   findPath (): { distance: number, path: ReturnPath } {
-    let node_queue = this.flat_grid.slice()
+    let cell_queue = this.flat_grid.slice()
 
-    while (node_queue.length) {
-      // go to the closest node in queue
-      let closest_node = node_queue.reduce(
-        (mem, node) => node.total_distance > mem.total_distance ? mem : node
+    while (cell_queue.length) {
+      // go to the closest cell in queue
+      let closest_cell = cell_queue.reduce(
+        (mem, cell) => cell.total_distance > mem.total_distance ? mem : cell
       )
-      node_queue.splice(node_queue.indexOf(closest_node), 1)
+      cell_queue.splice(cell_queue.indexOf(closest_cell), 1)
 
-      this.setAdjacentNodes(closest_node.index)
+      this.setAdjacentCells(closest_cell.index)
 
-      closest_node.adjacent_cells.map(({ neighbour, neighbour_distance }) => {
-        if (node_queue.includes(neighbour)) {
-          const new_total_distance = closest_node.total_distance + neighbour_distance
+      closest_cell.adjacent_cells.map(({ neighbour, neighbour_distance }) => {
+        if (cell_queue.includes(neighbour)) {
+          const new_total_distance = closest_cell.total_distance + neighbour_distance
           if (new_total_distance < neighbour.total_distance) {
             // refactor: accessing properties outside the class
             neighbour.total_distance = new_total_distance
-            neighbour.previous = closest_node
+            neighbour.previous = closest_cell
             if (neighbour.type === CellTypes.End)
               this.end_cell = neighbour
           }
@@ -147,14 +147,14 @@ class Game {
 
     if (this.end_cell) {
       // console.log('shortest path:')
-      // const tt = (node, fn) => (fn(node), node.previous && tt(node.previous, fn))
-      // tt(this.end_cell, node => console.log(node.type, node.index, node.total_distance))
-      const path = (function traverseBack(node): ReturnPath {
-        const current_node = [{ index: node.index, distance: node.total_distance, cell: node.type }]
-        if (!node.previous) {
-          return current_node
+      // const tt = (cell, fn) => (fn(cell), cell.previous && tt(cell.previous, fn))
+      // tt(this.end_cell, cell => console.log(cell.type, cell.index, cell.total_distance))
+      const path = (function traverseBack(cell): ReturnPath {
+        const current_cell = [{ index: cell.index, distance: cell.total_distance, cell: cell.type }]
+        if (!cell.previous) {
+          return current_cell
         } else {
-          return current_node.concat(traverseBack(node.previous))
+          return current_cell.concat(traverseBack(cell.previous))
         }
       })(this.end_cell)
       return {
