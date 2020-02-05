@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import update from 'react-addons-update'
 import CellControl from './CellControl'
+import Game from './models/Game'
 import './App.css'
 
 enum CellTypes { Boulder, Gravel, InWormhole, OutWormhole, Start, End, Clear }
@@ -38,7 +39,6 @@ class App extends Component<{}, IAppState> {
   }
 
   setCell(x:number, y:number, cell:CellTypes) {
-    // debugger
     const grid_updates: any = { [x]: { [y]: { $set: this.state.selected } } }
     if (this.state.selected === CellTypes.Start) {
       this.setState({ start: [x, y] })
@@ -57,6 +57,11 @@ class App extends Component<{}, IAppState> {
       this.setState({ end: undefined })
     }
     this.setState({ grid: update(this.state.grid, grid_updates) })
+  }
+
+  solve() {
+    //
+    // let game = new Game(this.state.grid, [this.state.size_x, this.state.size_y])
   }
 
   render() {
@@ -104,7 +109,7 @@ class App extends Component<{}, IAppState> {
           </div>
         </div>
         <div className="resetContainer">
-          <div className="solve btn">Solve</div>
+          <div className="solve btn" onClick={this.solve}>Solve</div>
           <div className="reset btn">Resize / Reset</div>
         </div>
       </div>
