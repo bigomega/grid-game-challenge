@@ -22,6 +22,28 @@ I-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
 	expect(solution.distance).toBe(12);
 });
 
+test('uses portal', () => {
+	const mapgen = `\
+--IG--
+-SGGEO
+-GGG--
+I-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	let game = new Game(mapgen, [4,6])
+	let solution = game.findPath()
+	expect(solution.distance).toBe(6);
+});
+
+test('prefers gravel when necessary', () => {
+	const mapgen = `\
+-SIB--
+--GGEG
+-GBG--
+O-----`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	let game = new Game(mapgen, [4,6])
+	let solution = game.findPath()
+	expect(solution.distance).toBe(12);
+});
+
 
 test('finds no solution case', () => {
 	const mapgen = `\
@@ -31,5 +53,17 @@ test('finds no solution case', () => {
 I-B---`.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
 	let game = new Game(mapgen, [4,6])
 	let solution = game.findPath()
+	expect(solution.distance).toBe(-1);
+});
+
+test('doesn\'t break without start or end', () => {
+	let mapgen = '--BE-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	let game = new Game(mapgen, [1,5])
+	let solution = game.findPath()
+	expect(solution.distance).toBe(-1);
+
+	mapgen = '--SB-'.split('\n').map(row => row.split('').map(cell => cell_type_map[cell]))
+	game = new Game(mapgen, [1,5])
+	solution = game.findPath()
 	expect(solution.distance).toBe(-1);
 });
