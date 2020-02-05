@@ -1,10 +1,19 @@
 ## Block path finding game
+.
+<img src="/public/icons/start.svg" width="70px" style="margin-right: 50px;" />
+.....
+<img src="/public/icons/portal-in.png" width="30px"/>
+<img src="/public/icons/boulder-3.png" width="80px"/>
+<img src="/public/icons/portal-out.png" width="30px"/>
+.....
+<img src="/public/icons/end.svg" width="70px"/>
+.
 
 ```
 npm install
 npm start
 ```
-A browser window will open [http://localhost:3000](http://localhost:3000) [^1].
+A browser window will open [http://localhost:3000](http://localhost:3000).
 
 #### Code structure
 ```
@@ -24,4 +33,11 @@ A browser window will open [http://localhost:3000](http://localhost:3000) [^1].
 npm test
 ```
 
-[^1]: bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#### Screenshot
+![screenshot](/public/screenshot.png)
+
+***
+
+bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+[boulder]: /public/icons/boulder-3.svg
