@@ -18,6 +18,7 @@ interface IAppState {
   // out_wormhole_cells: Index[],
   grid: CellTypes[][],
   solution: string[],
+  alertNoSolution: boolean,
   start?: Index,
   end?: Index,
 }
@@ -30,6 +31,7 @@ class App extends Component<{}, IAppState> {
     selected: CellTypes.Start,
     grid: this.generateGrid(5, 10),
     solution: [],
+    alertNoSolution: false,
   }
 
   constructor(props: object) {
@@ -67,7 +69,7 @@ class App extends Component<{}, IAppState> {
     let game = new Game(this.state.grid, [this.state.size_x, this.state.size_y])
     let solution = game.findPath()
     let path:ReturnPath = solution.path
-    this.setState({ solution: path.map(o => o.index.join()) })
+    this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
     console.log(solution.distance)
   }
 
@@ -85,7 +87,8 @@ class App extends Component<{}, IAppState> {
     ]
     const cell_images = cell_types.reduce((mem: any, obj) => (mem[obj.type] = obj.img, mem), {})
     return (
-      <div className="App">
+      <div className={'App' + (this.state.alertNoSolution?' noPath':'')}>
+        <div className="alert">No path could be found.</div>
         <div className="controllerContainer">
           {
             cell_types.map(obj =>
@@ -119,7 +122,7 @@ class App extends Component<{}, IAppState> {
           </div>
         </div>
         <div className="resetContainer">
-          <div className="solve btn" onClick={this.solve.bind(this)}>Solve</div>
+          <div className="solve btn" onClick={this.solve.bind(this)}>SOLVE</div>
           <div className="reset btn">Resize / Reset</div>
         </div>
       </div>
