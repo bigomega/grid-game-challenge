@@ -33,14 +33,13 @@ class Grid {
     return this
   }
 
-  connectCells (index: Index) {
+  getNeighbours (index: Index) {
+    const neighbours: { neighbour: Cell, neighbour_distance: number }[] = []
     const cell = this.data[index[0]][index[1]]
     if (cell.type === CellTypes.InWormhole) {
       this.wormholeOuts.map(neighbour => {
         const neighbour_distance = this.getDistance(cell.type, CellTypes.OutWormhole)
-        if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
-          cell.adjacent_cells.push({ neighbour, neighbour_distance })
-        }
+        neighbours.push({ neighbour, neighbour_distance })
         return 1
       })
     }
@@ -60,11 +59,10 @@ class Grid {
       if (neighbour.type === CellTypes.Boulder) // boulders are disconnected
         return 1
       const neighbour_distance = this.getDistance(cell.type, neighbour.type)
-      if (!cell.adjacent_cells.map(n => n.neighbour).includes(neighbour)) {
-        cell.adjacent_cells.push({ neighbour, neighbour_distance })
-      }
+      neighbours.push({ neighbour, neighbour_distance })
       return 1
     })
+    return neighbours
   }
 
   getDistance (fromCell: CellTypes, toCell: CellTypes): number {
@@ -101,30 +99,34 @@ class Grid {
   }
 
   findPath (): { distance: number, path: ReturnPath } {
-    let cell_queue = this.flat_data.slice()
+    let cell_queue = [this.flat_data.reduce(
+      (mem, cell) => cell.total_distance > mem.total_distance ? mem : cell
+    )]
+    if (cell_queue[0] && cell_queue[0].total_distance !== 0) {
+      // head must be at 0, no head
+      return { distance: -1 , path: [] }
+    }
 
     while (cell_queue.length) {
-      // go to the closest cell in queue
-      let closest_cell = cell_queue.reduce(
-        (mem, cell) => cell.total_distance > mem.total_distance ? mem : cell
-      )
-      cell_queue.splice(cell_queue.indexOf(closest_cell), 1)
+      const next_cell = cell_queue.shift()
 
-      this.connectCells(closest_cell.index)
+      if(next_cell){
+        next_cell.visited = true
 
-      closest_cell.adjacent_cells.map(({ neighbour, neighbour_distance }) => {
-        if (cell_queue.includes(neighbour)) {
-          const new_total_distance = closest_cell.total_distance + neighbour_distance
-          if (new_total_distance < neighbour.total_distance) {
-            // refactor: accessing properties outside the class
-            neighbour.total_distance = new_total_distance
-            neighbour.previous = closest_cell
+        this.getNeighbours(next_cell.index).map(({ neighbour, neighbour_distance }) => {
+          if(!cell_queue.includes(neighbour) && !neighbour.visited) {
+            cell_queue.push(neighbour)
+          }
+          const new_neighbour_distance = next_cell.total_distance + neighbour_distance
+          if (new_neighbour_distance < neighbour.total_distance) {
+            neighbour.total_distance = new_neighbour_distance
+            neighbour.previous = next_cell
             if (neighbour.type === CellTypes.End)
               this.end_cell = neighbour
           }
-        }
-        return 1
-      })
+          return 1
+        })
+      }
     }
 
     if (this.end_cell) {
