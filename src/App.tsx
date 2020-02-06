@@ -21,6 +21,7 @@ class App extends Component<{}, IAppState> {
 
 
   keyBinding(event: any){
+    console.log(event.keyCode)
     switch (event.keyCode) {
       case 83: // [S]
         this.setState({ selected: CellTypes.Start })
@@ -42,6 +43,11 @@ class App extends Component<{}, IAppState> {
         break
       case 67: // [C]
         this.setState({ selected: CellTypes.Clear })
+        break
+      case 86: // [V] - sol[V]e
+      case 13: // <return>
+      case 32: // <space>
+        this.solve()
         break
     }
   }
@@ -148,7 +154,7 @@ class App extends Component<{}, IAppState> {
           </div>
         </div>
         <div className="resetContainer">
-          <div className="solve btn" onClick={this.solve.bind(this)}>SOLVE</div>
+          <div className="solve btn" onClick={this.solve.bind(this)}>SOL(V)E</div>
           <input type="number" ref={this.size_x_ref} defaultValue="5"/>
           x
           <input type="number" ref={this.size_y_ref} defaultValue="10"/>
