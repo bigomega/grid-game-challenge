@@ -15,6 +15,10 @@ class Cell {
     this.visited = false
     return this
   }
+
+  setTotalDistance(dist:number) {
+    this.total_distance = dist
+  }
 }
 
 export default Cell

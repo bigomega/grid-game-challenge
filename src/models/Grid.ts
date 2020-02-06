@@ -4,41 +4,48 @@ import Cell from './Cell'
 class Grid {
   size: Index
   mapgen: CellTypes[][]
-  wormholeOuts: Cell[]
+  wormholeOuts: {cell: Cell, index: Index}[]
   data: Cell[][]
   end_cell: Cell | null
-  head_cell: Cell | {}
+  head_index: Index
 
 
   constructor (mapgen:CellTypes[][], size: Index) {
     this.size = size
     this.mapgen = mapgen
     this.wormholeOuts = []
-    this.head_cell = {}
+    this.head_index = [-1, -1]
     this.data = mapgen.map((row, x) => {
       return row.map((type, y) => {
-        const cell = new Cell([x, y], type, Infinity)
+        const cell = new Cell([x, y], type)
         if(type === CellTypes.OutWormhole)
-          this.wormholeOuts.push(cell)
+          this.wormholeOuts.push({ cell, index: [x,y] })
         if (type === CellTypes.Start)
-          this.head_cell = cell
+          this.head_index = [x, y]
         return cell
       })
     })
     this.end_cell = null
-    if (this.head_cell instanceof Cell)
-      this.head_cell.total_distance = 0
+    this.hasHead() && this.getHead().setTotalDistance(0)
     return this
   }
 
+  hasHead() {
+    return this.head_index[0] !== -1 && this.head_index[1] !== -1
+  }
+
+  getHead() {
+    return this.hasHead() ? this.data[this.head_index[0]][this.head_index[1]] : new Cell([-5, -5], CellTypes.Clear)
+  }
+
   getNeighbours (index: Index) {
-    const neighbours: { neighbour: Cell, neighbour_distance: number }[] = []
+    const neighbours: { neighbour: Cell, neighbour_distance: number, neighbour_index: Index }[] = []
     const cell = this.data[index[0]][index[1]]
     if (cell.type === CellTypes.InWormhole) {
       // all the wormhole outs are neighnours to wormhole in
-      this.wormholeOuts.map(neighbour => {
+      this.wormholeOuts.map(w_out => {
         const neighbour_distance = this.getDistance(cell.type, CellTypes.OutWormhole)
-        neighbours.push({ neighbour, neighbour_distance })
+        neighbours.push({ neighbour: w_out.cell, neighbour_distance, neighbour_index: w_out.index })
         return null
       })
     }
@@ -47,8 +54,8 @@ class Grid {
     // can write the directions better
     ;[[-1,0], [1,0], [0,-1], [0,1]].map(dir => {
       let nextIndex = [index[0] + dir[0], index[1] + dir[1]]
-      let x = nextIndex[0], y = nextIndex[1] // out of bounds
-      if (x < 0 || y < 0)
+      let x = nextIndex[0], y = nextIndex[1]
+      if (x < 0 || y < 0) // out of bounds
         return null
       if (x >= this.size[0] || y >= this.size[1])
         return null
@@ -56,7 +63,7 @@ class Grid {
       if (neighbour.type === CellTypes.Boulder) // boulders are disconnected
         return null
       const neighbour_distance = this.getDistance(cell.type, neighbour.type)
-      neighbours.push({ neighbour, neighbour_distance })
+      neighbours.push({ neighbour, neighbour_distance, neighbour_index: [x, y] })
       return null
     })
 
@@ -99,25 +106,27 @@ class Grid {
   }
 
   findPath (): { distance: number, path: ReturnPath } {
-    if (!(this.head_cell instanceof Cell)) {
-      // head MUST exist
+    if (!this.hasHead()) {
       return { distance: -1 , path: [] }
     }
-    const cell_queue = [this.head_cell]
+    const cell_queue: Cell[] = [this.getHead()]
+    const cell_index_queue: Index[] = [this.head_index]
 
-    while (cell_queue.length) {
-      const next_cell = cell_queue.shift()
+    while (cell_queue.length && cell_index_queue.length) {
+      const next_cell: Cell | undefined = cell_queue.shift()
+      const next_index: Index | undefined = cell_index_queue.shift()
 
-      if(next_cell){
+      if(next_cell && next_index){
         next_cell.visited = true
 
-        this.getNeighbours(next_cell.index).map(({ neighbour, neighbour_distance }) => {
+        this.getNeighbours(next_index).map(({ neighbour, neighbour_distance, neighbour_index }) => {
           if(!cell_queue.includes(neighbour) && !neighbour.visited) {
             cell_queue.push(neighbour)
+            cell_index_queue.push(neighbour_index)
           }
           const new_neighbour_distance = next_cell.total_distance + neighbour_distance
           if (new_neighbour_distance < neighbour.total_distance) {
-            neighbour.total_distance = new_neighbour_distance
+            neighbour.setTotalDistance(new_neighbour_distance)
             neighbour.previous = next_cell
             if (neighbour.type === CellTypes.End)
               this.end_cell = neighbour
