@@ -5,22 +5,19 @@ class Grid {
   size: Index
   mapgen: CellTypes[][]
   wormholeOuts: Cell[]
-  flat_data: Cell[]
   data: Cell[][]
   end_cell: Cell | null
-  head_cell: Cell
+  head_cell: Cell | {}
 
 
   constructor (mapgen:CellTypes[][], size: Index) {
     this.size = size
     this.mapgen = mapgen
     this.wormholeOuts = []
-    this.flat_data = [] // .flat() is still experimental
-    this.head_cell = new Cell([0, 0], CellTypes.Start)
+    this.head_cell = {}
     this.data = mapgen.map((row, x) => {
       return row.map((type, y) => {
         const cell = new Cell([x, y], type, Infinity)
-        this.flat_data.push(cell)
         if(type === CellTypes.OutWormhole)
           this.wormholeOuts.push(cell)
         if (type === CellTypes.Start)
@@ -29,7 +26,8 @@ class Grid {
       })
     })
     this.end_cell = null
-    this.head_cell.total_distance = 0
+    if (this.head_cell instanceof Cell)
+      this.head_cell.total_distance = 0
     return this
   }
 
@@ -101,13 +99,11 @@ class Grid {
   }
 
   findPath (): { distance: number, path: ReturnPath } {
-    let cell_queue = [this.flat_data.reduce(
-      (mem, cell) => cell.total_distance > mem.total_distance ? mem : cell
-    )]
-    if (cell_queue[0] && cell_queue[0].total_distance !== 0) {
-      // head MUST be at 0, this means no head
+    if (!(this.head_cell instanceof Cell)) {
+      // head MUST exist
       return { distance: -1 , path: [] }
     }
+    const cell_queue = [this.head_cell]
 
     while (cell_queue.length) {
       const next_cell = cell_queue.shift()
