@@ -35,3 +35,5 @@ export const CELL_TYPES = [
   { class: 'outWormhole', type: CellTypes.OutWormhole, img:'/icons/portal-out.png', text: 'Wormhole (O)ut' },
   { class: 'clear', type: CellTypes.Clear, img:'/icons/shovel-2.svg', text: '(C)lear Point' },
 ]
+
+export const CELL_IMAGES = CELL_TYPES.reduce((mem: any, obj) => (mem[obj.type] = obj.img, mem), {})

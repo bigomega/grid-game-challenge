@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import update from 'react-addons-update'
 import CellControl from './CellControl'
 import Grid from './models/Grid'
-import { CellTypes, ReturnPath, IAppState, CELL_TYPES } from './util'
+import { CellTypes, ReturnPath, IAppState, CELL_TYPES, CELL_IMAGES } from './util'
 import './App.css'
 
 class App extends Component<{}, IAppState> {
@@ -60,7 +60,7 @@ class App extends Component<{}, IAppState> {
 
   setCell(x:number, y:number, cell:CellTypes) {
     const grid_updates: any = { [x]: { [y]: { $set: this.state.selected } } }
-    // refactor
+    // handling Start and end point uniqueness
     if (this.state.selected === CellTypes.Start) {
       this.setState({ start: [x, y] })
       if(this.state.start && cell !== CellTypes.Start) {
@@ -91,6 +91,7 @@ class App extends Component<{}, IAppState> {
     this.setState({ alertNoSolution: !path.length })
     let len = path.length
     if (len) {
+      // Animate the path
       let t = window.setInterval((x:any) => {
         this.setState({ solution: path.slice(len - 1).map(o => o.index.join()) })
         len--
@@ -99,12 +100,11 @@ class App extends Component<{}, IAppState> {
     } else {
       this.setState({ solution: [] })
     }
-    // this.setState({ solution: path.map(o => o.index.join()), alertNoSolution: !path.length })
     // console.log(solution.distance)
   }
 
   reset() {
-    let size_x:number = +((this.size_x_ref.current && this.size_x_ref.current.value) || 5)
+    let size_x:number = +((this.size_x_ref.current && this.size_x_ref.current.value) || 5) // problem with unclear typing
     let size_y:number = +((this.size_y_ref.current && this.size_y_ref.current.value) || 10)
     this.setState({ size_x, size_y, grid: this.generateGrid(size_x, size_y), solution: [], alertNoSolution: false })
   }
@@ -112,7 +112,6 @@ class App extends Component<{}, IAppState> {
   render() {
     // console.log(this.state.start, this.state.end)
     // console.log(this.state.solution)
-    const cell_images = CELL_TYPES.reduce((mem: any, obj) => (mem[obj.type] = obj.img, mem), {})
     return (
       <div className={'App' + (this.state.alertNoSolution?' noPath':'')}>
         <div className="alert">No path could be found.</div>
@@ -139,7 +138,7 @@ class App extends Component<{}, IAppState> {
                     className={'cell' + (this.state.solution.includes([x, y].join())?' path': '')}
                     data-x={x} data-y={y} key={y} onClick={e => this.setCell(x, y, cell)}
                   >
-                    { cell !== CellTypes.Clear && <img src={process.env.PUBLIC_URL + cell_images[cell]} alt={CellTypes[cell]} />}
+                    { cell !== CellTypes.Clear && <img src={process.env.PUBLIC_URL + CELL_IMAGES[cell]} alt={CellTypes[cell]} />}
                   </div>
                 )
               }
